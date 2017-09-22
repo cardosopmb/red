@@ -1,0 +1,28 @@
+Package: red
+Title: IUCN Redlisting Tools
+Version: 1.2.0
+Date: 2017-07-27
+Author: Pedro Cardoso
+Maintainer: Pedro Cardoso <pedro.cardoso@helsinki.fi>
+Description: Includes algorithms to facilitate the assessment of extinction
+    risk of species according to the IUCN (International Union for Conservation of
+    Nature, see <http://www.iucn.org> for more information) red list criteria.
+Depends:
+    R (>= 3.0.0)
+Imports:
+    BAT,
+    dismo,
+    geosphere,
+    graphics,
+    grDevices, jsonlite,
+    maptools,
+    raster,
+    rgdal,
+    rgeos,
+    sp,
+    stats,
+    utils
+License: GPL-3
+LazyData: true
+Roxygen: list(wrap = FALSE)
+RoxygenNote: 6.0.1
