@@ -35,7 +35,7 @@ List with either one or two raster objects (depending if ensemble modelling is p
 Prediction of potential species distributions using maximum entropy (maxent).
 }
 \details{
-Builds maxent (maximum entropy) species distribution models (Phillips et al. 2004, 2006; Elith et al. 2011) using function maxent from R package dismo (Hijmans et al. 2017). Dismo requires the MaxEnt species distribution model software, a java program that can be downloaded from https://www.cs.princeton.edu/~schapire/maxent/. Copy the file 'maxent.jar' into the 'java' folder of the dismo package. That is the folder returned by system.file("java", package="dismo"). You need MaxEnt version 3.3.3b or higher. Please note that this program (maxent.jar) cannot be redistributed or used for commercial or for-profit purposes.
+Builds maxent (maximum entropy) species distribution models (Phillips et al. 2004, 2006; Elith et al. 2011) using function maxent from R package dismo (Hijmans et al. 2017). Dismo requires the MaxEnt species distribution model software, a java program that can be downloaded from http://biodiversityinformatics.amnh.org/open_source/maxent. Copy the file 'maxent.jar' into the 'java' folder of the dismo package. That is the folder returned by system.file("java", package="dismo"). You need MaxEnt version 3.3.3b or higher. Please note that this program (maxent.jar) cannot be redistributed or used for commercial or for-profit purposes.
 }
 \references{
 Breiner, F.T., Guisan, A., Bergamini, A., Nobis, M.P. (2015) Overcoming limitations of modelling rare species by using ensembles of small models. Methods in Ecology and Evolution, 6: 1210-1218.

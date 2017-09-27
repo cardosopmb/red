@@ -1,0 +1,169 @@
+---
+title: "red"
+author: "Pedro Cardoso (<pedro.cardoso@helsinki.fi>)"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{red}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+## Introduction
+
+The **IUCN Red List of Threatened Species** is the most widely used information source on species extinction risk, relying on a number of objective criteria. It has been used to raise the awareness of conservation problems and facilitate subsequent inclusion in lists of legally protected species, guide conservation efforts and funding, measure site irreplaceability and vulnerability, influence environmental policies and legislation and evaluate and monitor the state of biodiversity. The IUCN criteria are based on, among others, population size and decline, geographic range, fragmentation and the spatial extent of threats.
+
+The R package *red* performs a number of spatial analyses based on either observed occurrences or estimated ranges. Importantly, given the frequent shortcomings of available data, the package allows the calculation of confidence limits for EOO, AOO and the RLI. It outputs geographical range, elevation and country values, maps in several formats and vector data for visualization in Google Earth. The raw data accepted by most functions are:
+
+* a matrix of longitude and latitude or eastness and northness of species occurrence records, and
+
+* a raster object as defined by the R package *raster* depicting habitat or environmental variables of interest to the modelling of potential species distributions.
+
+The main functions are:
+
+* **Extent of Occurrence (*eoo*)** - Calculates the EOO of a species based on either records or predicted distribution. EOO is calculated as the minimum convex polygon covering all known or predicted sites for the species.
+
+* **Area of Occupancy (*aoo*)** - Calculates the AOO of a species based on either known records or predicted distribution. AOO is calculated as the area of all known or predicted cells for the species. The resolution is 2x2km as required by IUCN.
+
+* **Recorded distribution of species (*map.points*)** - Mapping of all cells where the species is known to occur. To be used if either information on the species is very scarce (and it is not possible to model the species distribution) or, on the contrary, complete (and there is no need to model the distribution).
+
+* **Species distribution of habitat specialists (*map.habitat*)** - Mapping of all habitat patches where the species is known to occur. In many cases a species has a very restricted habitat and we generally know where it occurs. In such cases using the distribution of the known habitat patches may be enough to map the species.
+
+* **Species distribution modelling (*map.sdm*)** - Prediction of potential species distributions using maximum entropy (maxent). Builds maxent models using function maxent from R package *dismo*. *dismo* requires the *MaxEnt* species distribution model software, a java program that can be downloaded from http://biodiversityinformatics.amnh.org/open_source/maxent. Copy the file *maxent.jar* into the *java* folder of the *dismo* package. That is the folder returned by *system.file("java", package="dismo")*. When multiple runs are performed, it is possible to calculate confidence limits (two-sided) for the maps and consequently the EOO and AOO values. All cells predicted to be suitable for the species in at least 97.5% of the runs will be used to calculate the lower confidence limits. Conversely, all cells predicted to be suitable for the species in at least 2.5% of the runs will be used to calculate the upper confidence limits for EOO and AOO. Consensus maps are also calculated transforming the initial maps from probabilities to incidence, doing a weighted sum of these (each run is weighted as *max(0, (AUC - 0.5)) ^ 2*) and presence being predicted in the consensus map for cells with values > 0.5. There are numerous options within this function that should be carefully considered, please check the vignette of *map.sdm*.
+
+* **Map of multiple species simultaneously (*map.easy*)** - Single step for mapping multiple species distributions, with or without modeling. Outputs maps in asc, pdf and kml formats, plus a file with EOO, AOO and a list of countries where the species is predicted to be present.
+
+* **Red List Index (*rli*)** - Calculates the Red List Index (RLI) for a group of species. The IUCN Red List Index (RLI) reflects overall changes in IUCN Red List status over time of a group of taxa. The RLI uses weight scores based on the Red List status of each of the assessed species. These scores range from 0 (Least Concern) to 5 (Extinct/Extinct in the Wild). Summing these scores across all species and relating them to the worst-case scenario, i.e. all species extinct, gives us an indication of how biodiversity is doing. Importantly, the RLI is based on true improvements or deteriorations in the status of species, i.e. genuine changes. It excludes category changes resulting from, e.g., new knowledge. The RLI approach helps to develop a better understanding of which taxa, regions or ecosystems are declining or improving. We have suggested the use of bootstrapping to search for statistical significance when comparing taxa or for trends in time of the index and this approach is here implemented. For each group, species are randomly sampled with replacement until the original number of species is attained. The confidence limits of the RLI values are the 2.5 and 97.5 percentiles of the runs. The change between dates is considered statistically significant if more than 95 % of the randomization values have the same sign (either increase or decrease) as the true values with no bootstrapping.
+
+* **Red List Index for multiple groups (*rli.multi*)** - Calculates the Red List Index (RLI) for multiple groups of species simultaneously.
+
+* **Sampled Red List Index (*rli.sampled*)** - Calculates accumulation curve of confidence limits in sampled RLI. In many groups it is not possible to assess all species due to huge diversity and/or lack of resources. In such case, the RLI is estimated from a randomly selected sample of species - the Sampled Red List Index (SRLI). This function allows to calculate how many species are needed to reach a given maximum error of the SRLI around the true value of the RLI (with all species included) for future assessments of the group.
+
+## Example
+
+I provide an example of a typical session using *red*. Start by loading the package and retrieving species records:
+```{r}
+library(red)
+data(red.records)
+spRec = red.records
+```
+Ten unique records for *Hogna maderiana* (Walckenaer, 1837), a spider endemic to Madeira Island, have longitude and latitude data. Users can provide their own distribution data in either longitude/latitude (projected automatically to metric units) or any metric system such as UTM (in which case make sure that all data are in the same zone). One can calculate EOO and AOO (in km<sup>2</sup>) and extract information on the countries occupied:
+```{r}
+eoo(spRec)
+aoo(spRec)
+countries(spRec)
+```
+For species whose records are known to be complete or at least depict their entire geographic range this is the basic information to be used in assessments. For further analyses a set of environmental layers are needed in raster format. These can be either: 
+
+* user-provided, matching the species records data units, or 
+
+* set up automatically by the package.
+
+The function *red.setup* will download worldclim, elevation, and global land cover data at 30 arc-second and rescale them to 5 arc-minute resolutions (approx. 1 and 10 km respectively). The second resolution will be automatically chosen whenever the raw EOO (without modelling) is above 100000 km<sup>2</sup> as it considerably speeds up the modelling and is much above the threshold of 20000 km<sup>2</sup> for the category Vulnerable. For *H. maderiana* all data are available within *red*. One of these is the elevation for the region that can be used to extract information on species altitudinal range.
+```{r}
+data(red.layers)
+spRaster <- red.layers
+altRaster <- spRaster[[3]]
+elevation(spRec, altRaster)
+```
+```{r fig.width=8, fig.height = 6}
+raster::plot(altRaster)
+points(spRec)
+```
+
+Note that one record is in the sea. This may be due to spatial inaccuracy of the record or missing environmental data at the edges of the mainland or an island. In such cases, it might be good to move such points to the closest cell with environmental data.
+```{r fig.width=8, fig.height = 6}
+raster::plot(altRaster)
+points(spRec, col="red")
+spRec = move(spRec, spRaster)
+points(spRec)
+```
+
+Unusual records can also be due to misidentifications, erroneous data sources or errors in transcriptions. These outliers can often be detected by looking at graphs of geographical or environmental space.
+```{r fig.width=8, fig.height = 4}
+outliers(spRec, spRaster)
+```
+
+One might want to carefully look at records 1 and 5 (the ones at the southern coast of the island) as their environmental fingerprint is somewhat different from all other records as revealed by their distance to the centroid of the PCA.
+
+It is now possible to attempt mapping the species distribution.
+```{r}
+distrRaw <- map.points(spRec, spRaster)
+```
+
+Note that the output is a list with a raster depicting all the cells where the species is recorded and a second element with the respective values for EOO and AOO.
+```{r fig.width=8, fig.height = 6}
+raster::plot(distrRaw[[1]])
+distrRaw[[2]]
+```
+
+This map and values obviously assume that the records represent the entire range of the species. Yet, this is seldom true and in most cases some kind of extrapolation is justified. I propose two options within *red* to overcome the limitations of data. Often a species has a very restricted habitat and one generally knows where this habitat occurs. In such cases, using the distribution of the known habitat patches may be enough to accurately map the species. If one knows the spider species is currently restricted to forest areas.
+```{r fig.width=8, fig.height = 6}
+spHabitat <- spRaster[[4]]
+spHabitat[spHabitat != 4] <- 0
+spHabitat[spHabitat == 4] <- 1
+raster::plot(spHabitat, legend = FALSE)
+points(spRec)
+```
+
+If one assumes the species does not currently occur outside forests that once occupied most of the island or in many of the small, isolated, forest patches, the following function retrieves only habitat patches known to be occupied.
+```{r fig.width=8, fig.height = 6}
+distrHabitat <- map.habitat(spRec, spHabitat, move = FALSE)
+raster::plot(distrHabitat[[1]], legend = FALSE)
+```
+
+The output is again a list with a raster depicting all the cells where the species is potentially present and a second element with the original and modelled values for EOO and AOO.
+```{r}
+distrHabitat[[2]]
+```
+
+It is also possible to move points outside forest areas to the closest cell with forest, in case these points do not represent subpopulations lost in the past (due to deforestation) but are due to georeferencing error, by setting parameter *move = TRUE*.
+
+The second option available in *red* to overcome data deficiency is performing species distribution modelling (SDM) using Maxent. This technique however requires careful consideration of biases. SDMs are prone to spatial bias due to clumped distribution records derived from accessibility of sites, emphasis of sampling on certain areas in the past, etc. A thinning algorithm used in *red* eliminates records closer than a given distance to any other record. A number of random runs are made and the single run that keeps as many as possible of the original records is chosen.
+```{r fig.width=8, fig.height = 6}
+thinRec <- thin(spRec, 0.1)
+plot(spRec, col = "red")
+points(thinRec)
+```
+
+In this case, no records are closer than 10% of the maximum distance between any two after thinning.
+
+Overfitting is also a possibility in SDMs if the number of records is low compared to the number of predictor variables (environmental or other layers). The following function reduces the number of dimensions through either PCA or eliminating highly correlated layers:
+```{r fig.width=8, fig.height = 6}
+spRaster <- raster.reduce(red.layers[[1:3]], n = 2)
+raster::plot(spRaster)
+```
+
+Note that land use was not used as it is a categorical variable.
+
+Only after all pre-processing of occurrence and climatic plus land use data is it possible to model the distribution.
+
+IUCN requires maps to support the assessments, and *red* has the possibility of exporting them in several formats, namely kml:
+
+```{r fig.width=8, fig.height = 6}
+par(mfrow = c(1,1))
+map.draw(spRec, distrHabitat[[1]])
+kml(distrHabitat[[1]], filename = "spMap.kml")
+```
+
+As an alternative or exploratory step, there is a function that performs most of this process in an automated way for multiple species (*map.easy*).
+
+Finally, it is possible to calculate the Red List Index for single or multiple taxa simultaneously, including the calculation of confidence limits through bootstrapping:
+
+```{r fig.width=8, fig.height = 6}
+rliData <- matrix(c("LC","LC","EN","EN","EX","EX","LC","CR","CR","EX"), ncol = 2, byrow = TRUE)
+colnames(rliData) <- c("2000", "2010")
+rliData
+rli(rliData)
+rliData <- cbind(c("Arthropods","Arthropods","Birds","Birds","Birds"), rliData)
+rliData
+rli.multi(rliData, boot = TRUE)
+```
+
+## Repositories
+https://CRAN.R-project.org/package=red
+
+https://github.com/cardosopmb/red
+
+## Citation
+Cardoso, P. (2017) *red* - an R package to facilitate species red list assessments according to the IUCN criteria. *Biodiversity Data Journal*.

@@ -1,7 +1,7 @@
 Package: red
 Title: IUCN Redlisting Tools
-Version: 1.2.0
-Date: 2017-07-27
+Version: 1.2.1
+Date: 2017-09-27
 Author: Pedro Cardoso
 Maintainer: Pedro Cardoso <pedro.cardoso@helsinki.fi>
 Description: Includes algorithms to facilitate the assessment of extinction
@@ -26,3 +26,6 @@ License: GPL-3
 LazyData: true
 Roxygen: list(wrap = FALSE)
 RoxygenNote: 6.0.1
+Suggests: knitr,
+    rmarkdown
+VignetteBuilder: knitr
