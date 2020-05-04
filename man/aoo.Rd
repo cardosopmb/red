@@ -7,10 +7,10 @@
 aoo(spData)
 }
 \arguments{
-\item{spData}{One of three options: 1) matrix of longitude and latitude (two columns) of each occurrence record; 2) matrix of easting and northing (two columns, e.g. UTM) of each occurrence record in meters;  3) RasterLayer object of predicted distribution (0/1 values).}
+\item{spData}{One of three options: 1) matrix of longitude and latitude (two columns) of each occurrence record; 2) matrix of easting and northing (two columns, e.g. UTM) of each occurrence record in meters;  3) RasterLayer object of predicted distribution (either 0/1 or probabilistic values).}
 }
 \value{
-A single value in km2.
+A single value in km2 or a vector with lower confidence limit, consensus and upper confidence limit (probabilities 0.975, 0.5 and 0.025 respectively).
 }
 \description{
 Calculates the Area of Occupancy of a species based on either known records or predicted distribution.

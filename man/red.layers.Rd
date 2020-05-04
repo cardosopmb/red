@@ -4,7 +4,9 @@
 \name{red.layers}
 \alias{red.layers}
 \title{Environmental layers for Madeira.}
-\format{RasterStack object as defined by package raster.}
+\format{
+RasterStack object as defined by package raster.
+}
 \usage{
 data(red.layers)
 }

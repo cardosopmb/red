@@ -4,10 +4,12 @@
 \alias{rli.sampled}
 \title{Sampled Red List Index.}
 \usage{
-rli.sampled(spData, p = 0.05, runs = 1000)
+rli.sampled(spData, tree = NULL, p = 0.05, runs = 1000)
 }
 \arguments{
 \item{spData}{A vector with species assessment categories for a single point in time. Values can be text (EX, EW, RE, CR, EN, VU, NT, DD, LC) or numeric (0 for LC, 1 for NT, 2 for VU, 3 for EN, 4 for CR, 5 for RE/EW/EX).}
+
+\item{tree}{An hclust or phylo object (used when species are weighted by their unique contribution to phylogenetic or functional diversity).}
 
 \item{p}{p-value of confidence limits (in a two-tailed test).}
 

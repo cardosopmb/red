@@ -4,7 +4,9 @@
 \name{red.records}
 \alias{red.records}
 \title{Occurrence records for Hogna maderiana (Walckenaer, 1837).}
-\format{Matrix of longitude and latitude (two columns) of occurrence records for Hogna maderiana (Walckenaer, 1837), a spider species from Madeira Island.}
+\format{
+Matrix of longitude and latitude (two columns) of occurrence records for Hogna maderiana (Walckenaer, 1837), a spider species from Madeira Island.
+}
 \usage{
 data(red.records)
 }

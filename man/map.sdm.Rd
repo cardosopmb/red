@@ -4,8 +4,21 @@
 \alias{map.sdm}
 \title{Predict species distribution.}
 \usage{
-map.sdm(longlat, layers, error = NULL, categorical = NULL, thres = 0,
-  testpercentage = 0, mcp = TRUE, eval = TRUE, runs = 0, subset = 0)
+map.sdm(
+  longlat,
+  layers,
+  error = NULL,
+  year = NULL,
+  idconf = NULL,
+  categorical = NULL,
+  thres = 0,
+  testpercentage = 0,
+  mcp = TRUE,
+  points = FALSE,
+  eval = TRUE,
+  runs = 0,
+  subset = 0
+)
 }
 \arguments{
 \item{longlat}{Matrix of longitude and latitude or eastness and northness (two columns in this order) of each occurrence record.}
@@ -14,6 +27,10 @@ map.sdm(longlat, layers, error = NULL, categorical = NULL, thres = 0,
 
 \item{error}{Vector of spatial error in longlat (one element per row of longlat) in the same unit as longlat. Used to move any point randomly within the error radius.}
 
+\item{year}{Vector of sampling years in longlat (one element per row of longlat). Used to exclude old records with a given probability proportional to time passed since sampling (never excluded only for current year).}
+
+\item{idconf}{Vector of identification confidence in longlat (one element per row of longlat). Used to exclude uncertain records with a given probability. Can be on any scale where max values are certain (e.g. from 1 - very uncertain to 10 - holotype).}
+
 \item{categorical}{Vector of layer indices of categorical (as opposed to quantitative) data. If NULL the package will try to find them automatically based on the data.}
 
 \item{thres}{Threshold of logistic output used for conversion of probabilistic to binary (presence/absence) maps. If 0 this will be the value that maximizes the sum of sensitivity and specificity.}
@@ -21,6 +38,8 @@ map.sdm(longlat, layers, error = NULL, categorical = NULL, thres = 0,
 \item{testpercentage}{Percentage of records used for testing only. If 0 all records will be used for both training and testing.}
 
 \item{mcp}{Used for a precautionary approach. If TRUE, all areas predicted as present but outside the minimum convex hull polygon encompassing all occurrence records are converted to absence. Exceptions are cells connected to other areas inside the polygon.}
+
+\item{points}{If TRUE, force map to include cells with presence records even if suitable habitat was not identified.}
 
 \item{eval}{If TRUE, build a matrix with AUC, Kappa, TSS, EOO (from raw data), EOO (from model), AOO (from raw data) and AOO (from model).}
 

@@ -4,7 +4,9 @@
 \name{worldborders}
 \alias{worldborders}
 \title{World country borders.}
-\format{SpatialPolygonsDataFrame.}
+\format{
+SpatialPolygonsDataFrame.
+}
 \usage{
 data(worldborders)
 }

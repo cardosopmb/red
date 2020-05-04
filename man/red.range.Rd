@@ -4,7 +4,9 @@
 \name{red.range}
 \alias{red.range}
 \title{Geographic range for Hogna maderiana (Walckenaer, 1837).}
-\format{RasterLayer object as defined by package raster of range for Hogna maderiana (Walckenaer, 1837), a spider species from Madeira Island.}
+\format{
+RasterLayer object as defined by package raster of range for Hogna maderiana (Walckenaer, 1837), a spider species from Madeira Island.
+}
 \usage{
 data(red.range)
 }

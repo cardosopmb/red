@@ -4,7 +4,10 @@
 \alias{red.setDir}
 \title{Setup GIS directory.}
 \usage{
-red.setDir()
+red.setDir(gisPath = NULL)
+}
+\arguments{
+\item{gisPath}{Path to the directory where the gis files are stored.}
 }
 \description{
 Setup directory where GIS files are stored.

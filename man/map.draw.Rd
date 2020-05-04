@@ -4,8 +4,17 @@
 \alias{map.draw}
 \title{Map creation.}
 \usage{
-map.draw(longlat = NULL, layer, spName, borders = FALSE, scale = TRUE,
-  legend = FALSE, sites = TRUE, mcp = FALSE, print = FALSE)
+map.draw(
+  longlat = NULL,
+  layer,
+  spName,
+  borders = FALSE,
+  scale = TRUE,
+  legend = FALSE,
+  sites = TRUE,
+  mcp = FALSE,
+  print = FALSE
+)
 }
 \arguments{
 \item{longlat}{Matrix of longitude and latitude or eastness and northness (two columns in this order) of each occurrence record.}
